@@ -1,0 +1,27 @@
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Dependencies
+node_modules/
+
+# Build output
+dist/
+dist-ssr/
+
+# Runtime/generated files
+simulation-results/
+*.log
+
+# IDE / OS
+.vscode/
+.idea/
+.DS_Store
+
+
+# PostgreSQL backups
+*.dump
+docker-setup/neon_backup.sql
+
+backend/.env.docker

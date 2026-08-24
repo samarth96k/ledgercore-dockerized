@@ -1,0 +1,40 @@
+import express from "express";  
+import { authRouter } from "./modules/users/auth.routes.js";
+import { requestLogger } from "./common/middleware/requestLogger.js";
+import {logger} from "./common/config/logger.js";
+import { router } from "./modules/account/account.routes.js";
+import { transactionRouter } from "./modules/Transactions/transaction.routes.js";
+import { ledgerRouter } from "./modules/Ledger/ledger.routes.js";
+import { authUser, requireAdmin } from "./common/middleware/auth.middleware.js";
+import { paymentsRouter } from "./modules/payments/payment.routes.js";
+import { idempotencyRouter } from "./modules/idempotency/idempotency.routes.js";
+import { reconciliationRouter } from "./modules/reconcialation/reconciliation.routes.js";
+import cors from "cors";
+import simulationRouter from "./Simulation/simulation.routes.js";
+
+const PORT = process.env.PORT||3000;
+const app = express();
+
+app.use(requestLogger);
+app.use(express.json());
+app.use(
+  cors({
+    origin: process.env.FRONTEND_URL,
+    credentials: true,
+  }),
+);
+
+app.use("/api/user",authRouter);    
+app.use("/api/account",router);
+app.use("/banking/transaction",authUser,requireAdmin, transactionRouter);
+app.use("/banking/ledger", authUser,requireAdmin,ledgerRouter);
+app.use("/payments",authUser,paymentsRouter,);
+app.use("/banking/idempotency",authUser,requireAdmin,idempotencyRouter,);
+app.use("/banking/reconciliation",authUser,requireAdmin,reconciliationRouter,);
+app.use("/banking/simulation",authUser,simulationRouter,);
+
+
+app.get("/",(req,res)=>{res.send("API Working");})
+app.listen(PORT,()=>{
+    logger.info(`Server started at: ${PORT}`);
+}) 
